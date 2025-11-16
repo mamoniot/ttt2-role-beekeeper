@@ -48,9 +48,21 @@ function ROLE:Initialize()
 end
 
 if SERVER then
+  function ROLE:GiveRoleLoadout(ply, isRoleChange)
+    ply:GiveEquipmentWeapon("weapon_ttt_beegun")
+  end
+
+  function ROLE:RemoveRoleLoadout(ply, isRoleChange)
+    ply:StripWeapon("weapon_ttt_beegun")
+  end
+
   local function BeekeeperDealDamage(ply, inflictor, killer, amount, dmginfo)
+    -- Allow beekeepers to use explosive weapons.
+    if dmginfo:IsDamageType(DMG_BLAST) then return end
+
     local attacker = dmginfo:GetAttacker()
     if not IsValid(attacker) or not attacker:IsPlayer() or attacker:GetSubRole() ~= ROLE_BEEKEEPER then return end
+
     dmginfo:ScaleDamage(GetConVar("ttt2_beekeeper_damage_mult"):GetFloat() or 1.0)
   end
   hook.Add("PlayerTakeDamage", "BeekeeperDealDamage", BeekeeperDealDamage)

@@ -98,7 +98,7 @@ function SWEP:PrimaryAttack()
 
     headbee:SetNWEntity("Thrower", self.Owner)
     headbee:SetNoDraw(true)
-    headbee:SetHealth(100)
+    headbee:SetHealth(10)
 end
 
 function SWEP:SecondaryAttack()

@@ -10,6 +10,6 @@ L["ttt2_desc_" .. BEEKEEPER.name] = [[The Beekeeper is a Traitor role that canno
 L.label_ttt2_beekeeper_damage_mult = "Beekeeper Damage Multiplier"
 L.label_ttt2_beekeeper_damage_mult_last_stand = "Beekeeper Last Standing Damage Multiplier"
 
-L.ttt2_beekeeper_last_stand_title = "Your teammates are dead"
+L.ttt2_beekeeper_last_stand_title = "You Stand Alone"
 L.ttt2_beekeeper_last_stand_body_inc = "Damage increased to {multi}x"
 L.ttt2_beekeeper_last_stand_body_dec = "Damage decreased to {multi}x"

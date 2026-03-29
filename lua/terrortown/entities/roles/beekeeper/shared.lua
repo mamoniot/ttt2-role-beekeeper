@@ -79,15 +79,15 @@ if SERVER then
 
   local function CheckLastStand(dead_ply)
     local all_players = player.GetAll()
-    for _, beekeeper in ipairs(all_players) do
+    for i, beekeeper in ipairs(all_players) do
       if beekeeper:Alive() and not beekeeper:IsSpec() and beekeeper:GetSubRole() == ROLE_BEEKEEPER then
         local beekeeper_id = beekeeper:UserID()
         if not cur_dmg_mult[beekeeper_id] then
           local beekeeper_team = beekeeper:GetTeam()
           if not dead_ply or dead_ply:GetTeam() == beekeeper_team then
             local is_last_standing = true
-            for _, ply in ipairs(all_players) do
-              if ply:Alive() and not ply:IsSpec() and ply:GetTeam() == beekeeper_team then
+            for j, ply in ipairs(all_players) do
+              if i ~= j and ply:Alive() and not ply:IsSpec() and ply:GetTeam() == beekeeper_team then
                 is_last_standing = false
                 break
               end

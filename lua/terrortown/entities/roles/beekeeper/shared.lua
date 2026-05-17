@@ -77,6 +77,9 @@ if SERVER then
     dmginfo:ScaleDamage(cur_dmg_mult[attacker:UserID()] or base_dmg_mult)
   end)
 
+
+	util.AddNetworkString("ttt2_beekeeper_epop")
+
   local function CheckLastStand(dead_ply)
     local all_players = player.GetAll()
     for i, beekeeper in ipairs(all_players) do
@@ -95,20 +98,10 @@ if SERVER then
             if is_last_standing then
               cur_dmg_mult[beekeeper_id] = last_stand_dmg_mult
 
-              local body
-              if base_dmg_mult < last_stand_dmg_mult then
-                body = "ttt2_beekeeper_last_stand_body_inc"
-              else
-                body = "ttt2_beekeeper_last_stand_body_dec"
-              end
-              EPOP:AddMessage(
-                beekeeper,
-                {
-                  text = LANG.TryTranslation("ttt2_beekeeper_last_stand_title")
-                },
-                LANG.GetParamTranslation(body, {multi = last_stand_dmg_mult}),
-                6
-              )
+              -- Tell the client if their damage has increase or decreased
+              net.Start("ttt2_beekeeper_epop")
+              net.WriteBit(base_dmg_mult > last_stand_dmg_mult)
+              net.Send(beekeeper)
             end
           end
         end
@@ -118,6 +111,9 @@ if SERVER then
 
   hook.Add("PlayerDisconnected", "BeekeeperLastStandDisconnect", CheckLastStand)
   hook.Add("TTT2PostPlayerDeath", "BeekeeperLastStandDeath", CheckLastStand)
+  hook.Add("TTT2ReceivedForcedRole", "BeekeeperLastStandUpdate", function()
+    CheckLastStand(nil)
+  end)
   hook.Add("PlayerSpawn", "BeekeeperLastStandSpawn", function(ply)
     if not IsValid(ply) or not ply:Alive() or ply:IsSpec() then return end
     if ply:GetSubRole() == ROLE_BEEKEEPER then
@@ -127,6 +123,24 @@ if SERVER then
 end
 
 if CLIENT then
+  net.Receive("ttt2_beekeeper_epop", function()
+    if net.ReadBit() then
+      body = "ttt2_beekeeper_last_stand_body_dec"
+    else
+      body = "ttt2_beekeeper_last_stand_body_inc"
+    end
+    // As far as I can tell the serverside version of this method is broken, AddMessage must be called from the client.
+    EPOP:AddMessage(
+      {
+        text = LANG.TryTranslation("ttt2_beekeeper_last_stand_title")
+      },
+      LANG.GetParamTranslation(body, {multi = last_stand_dmg_mult}),
+      6,
+      nil,
+      true
+    )
+  end)
+
   function ROLE:AddToSettingsMenu(parent)
     local form = vgui.CreateTTT2Form(parent, "header_roles_additional")
 
